@@ -11,7 +11,7 @@ INIT = function() {
         if (window.cordova && StatusBar) {
             StatusBar.backgroundColorByHexString('#f0a818');
         }
-    }
+    })
 }; // function INIT 
 
 window.addEventListener('load', INIT);
