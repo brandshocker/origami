@@ -16,6 +16,24 @@ Origami = {
     }
 }
 
+Content = {
+    show: function (address) {
+        s('main-container').transition = '0.3s';
+        s('content').transition = '0.3s';
+        s('main-container').left = '-30%';
+        s('content').left = '0%';
+        s('content').boxShadow = '0px 0px 20px 0px rgba(0,0,0,0.6)';
+        Navigation.enable = false;
+    },
+    hide: function () {
+        s('main-container').transition = '0.3s';
+        s('content').transition = '0.3s';
+        s('main-container').left = '0%';
+        s('content').left = '100%';
+        Navigation.enable = true;
+    }
+}
+
 data = function (id) {
     return o(id).dataset;
 }; // function data 
@@ -63,21 +81,26 @@ Navigation = {
     animation: '0.3s',
     state: 'closed',
     started: false,
+    enable: true,
     create: function (par) {
         this.maxWidth = par.maxWidth;
         this.target = par.target;
         this.animation = par.animation;
     },
     open: function () {
-        s(Navigation.target).transition = Navigation.animation;
-        s(Navigation.target).left = '0px';
-        s(Navigation.target).boxShadow = '0px 0px 20px 0px rgba(0,0,0,0.6)';
-        s('main-container').left = (Navigation.maxWidth) / 2 + 'px';
-        s('main-blocker').visibility = 'visible';
-        o('main-blocker').addEventListener('click', function(){Navigation.close();});
-        s('main-blocker').transition = Navigation.animation;
-        s('main-blocker').opacity = '0.6';
-        this.state = 'open';
+        if (this.enable) {
+            s(Navigation.target).transition = Navigation.animation;
+            s(Navigation.target).left = '0px';
+            s(Navigation.target).boxShadow = '0px 0px 20px 0px rgba(0,0,0,0.6)';
+            s('main-container').left = (Navigation.maxWidth) / 2 + 'px';
+            s('main-blocker').visibility = 'visible';
+            o('main-blocker').addEventListener('click', function () {
+                Navigation.close();
+            });
+            s('main-blocker').transition = Navigation.animation;
+            s('main-blocker').opacity = '0.6';
+            this.state = 'open';
+        }
     },
     close: function () {
         o('main-blocker').removeEventListener('click', false);
@@ -100,16 +123,18 @@ Navigation = {
     touchMove: function (e) {
         Navigation.diff = e.touches[0].clientX;
         if (Navigation.state == 'closed') {
-            if (Navigation.xStart > Navigation.tolerance) return false;
-            Navigation.started = true;
-            s(Navigation.target).boxShadow = '0px 0px 20px 0px rgba(0,0,0,0.6)';
-            Navigation.pos = (e.touches[0].clientX - Navigation.xStart) - Navigation.maxWidth;
-            if (Navigation.pos > 0) Navigation.pos = 0;
-            if (Navigation.pos < -Navigation.maxWidth) Navigation.pos = -Navigation.maxWidth;
-            s(Navigation.target).left = Navigation.pos + "px";
-            s('main-container').left = (Navigation.pos + Navigation.maxWidth) / 2 + 'px';
-            s('main-blocker').visibility = 'visible';
-            s('main-blocker').opacity = (1 - (-Navigation.pos / Navigation.maxWidth)) * 0.6;
+            if (Navigation.enable) {
+                if (Navigation.xStart > Navigation.tolerance) return false;
+                Navigation.started = true;
+                s(Navigation.target).boxShadow = '0px 0px 20px 0px rgba(0,0,0,0.6)';
+                Navigation.pos = (e.touches[0].clientX - Navigation.xStart) - Navigation.maxWidth;
+                if (Navigation.pos > 0) Navigation.pos = 0;
+                if (Navigation.pos < -Navigation.maxWidth) Navigation.pos = -Navigation.maxWidth;
+                s(Navigation.target).left = Navigation.pos + "px";
+                s('main-container').left = (Navigation.pos + Navigation.maxWidth) / 2 + 'px';
+                s('main-blocker').visibility = 'visible';
+                s('main-blocker').opacity = (1 - (-Navigation.pos / Navigation.maxWidth)) * 0.6;
+            }
         } else {
             if (Navigation.xStart < Navigation.maxWidth) return false;
             Navigation.pos = (e.touches[0].clientX - Navigation.maxWidth);
